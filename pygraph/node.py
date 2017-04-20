@@ -1,4 +1,4 @@
-class Node:
+class Node(object):
 	"""
 	Temporary representation of a node, not a mean of storing data (which is Graph's role)
 	"""
@@ -13,7 +13,7 @@ class Node:
 		return self._name
 	
 	@property
-	def pre(self, edge_format= True):
+	def pre(self):
 		return self._predecessors[:]
 	
 	@property
@@ -21,11 +21,11 @@ class Node:
 		return [(self._name, x) for x in self._predecessors]
 	
 	@property
-	def suc(self, edge_format= True):
+	def suc(self):
 		return self._successors[:]
 	
 	@property
-	def named_suc(self, edge_format= True):
+	def named_suc(self):
 		return [(self._name, x) for x in self._successors]
 	
 	@property

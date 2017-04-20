@@ -7,7 +7,8 @@ _(On a side note, this library is educational in the first place. Feel free to p
 ## Features
 - [x] Oriented Graph
 - [ ] Non-Oriented Graph
-- [ ] Valued Graph
+- [x] Valued Graph
+- [x] Mark-able Graph
 - [ ] Paths
 - [ ] Algorithms
 - [ ] Visualization

@@ -10,7 +10,7 @@ def th(x):
 		3: "rd"
 	}.get(str(x)[-1], "th")
 
-class Graph:
+class Graph(object):
 	"""
 	Todo:
 		Nodes to be either an array of string/char or an integer (then create an array of string/char with range())
@@ -20,17 +20,23 @@ class Graph:
 	Graph representation:
 		- Adjacency Matrix:
 			* Works for oriented/non-oriented and valued/non-valued graphs.
-			* Useful feature: mat**n
+			* Useful feature: mat**n computes paths from node_i to node_j of length n at most
 			* Its simplicity and versatility is worth the memory cost.
 			
 	"""
 	
+	@property
+	def _no_edge(self):
+		return 0
+	
 	def __init__(self, nodes, edges):
-		self._adj_mat = np.matrix(np.zeros((len(nodes), len(nodes))))
+		n = len(nodes)
+				
+		self._adj_mat = np.matrix([[self._no_edge]*n ]*n)
 		self._names = nodes
 		
-		for x, y in [self._index_of(i, j) for i, j in edges]:
-			self._adj_mat[x, y] = 1
+		for i, j in [self._index_of(x, y) for x, y in edges]:
+			self._adj_mat[i, j] = 1
 	
 	
 	def _index_of(self, node, *args):
@@ -68,13 +74,15 @@ class Graph:
 	
 	@property
 	def nEdge(self):
-		return len([x for x in self._adj_mat.A1 if x != 0])
+		return len([x for x in self._adj_mat.A1 if x != self._no_edge])
 	
 	
 	def add(self, node):
 		nNodes = self.nNode
-		self._adj_mat = np.column_stack([self._adj_mat, [0]*nNodes])
-		self._adj_mat = np.row_stack   ([self._adj_mat, [0]*nNodes])
+		self._adj_mat = np.column_stack([self._adj_mat, [self._no_edge]*nNodes])
+		self._adj_mat = np.row_stack   ([self._adj_mat, [self._no_edge]*nNodes])
+		self._names.append(node)
+		self._names.append(node)
 	
 	def del_node(self, node):
 		i = self._index_of(node)
@@ -84,14 +92,14 @@ class Graph:
 		del self._names[i]
 	
 	def del_edge(self, index):
-		self[index] = 0
+		self[index] = self._no_edge
 	
 	
 	def predecessor(self, node, named= True):
 		i = self._index_of(node)
 		
 		# Extract indexes from the matrix
-		indexes = [x for x, y in enumerate(self._adj_mat[:, i].A1) if y != 0]
+		indexes = [x for x, y in enumerate(self._adj_mat[:, i].A1) if y != self._no_edge]
 		
 		return [self._name_of(x) for x in indexes] if named else indexes
 	
@@ -100,7 +108,7 @@ class Graph:
 		i = self._index_of(node)
 		
 		# Extract indexes from the matrix
-		indexes = [x for x, y in enumerate(self._adj_mat[i, :].A1) if y != 0]
+		indexes = [x for x, y in enumerate(self._adj_mat[i, :].A1) if y != self._no_edge]
 		
 		return [self._name_of(x) for x in indexes] if named else indexes
 	
@@ -133,6 +141,11 @@ class Graph:
 			self.del_node(index) 
 		else:
 			self.del_edge(index)
+	
+	
+	def __pow__(self, other):
+		# Will raise a TypeError if other isn't an integer, numpy's matrices handles this behavior
+		self._adj_mat **= other
 		
 	def __len__(self):
 		return [self.nNode, self.nEdge]
